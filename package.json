@@ -4,6 +4,16 @@
   "main": "lib/client.js",
   "author": "chad.d.elliott@gmail.com",
   "license": "MIT",
+  "homepage": "https://github.com/THEtheChad/arturo-client#readme",
+  "bugs": {
+    "url": "https://github.com/THEtheChad/arturo-client/issues"
+  },
+  "repository": "github:THEtheChad/arturo-client",
+  "keywords": [
+    "client",
+    "job",
+    "queue"
+  ],
   "dependencies": {
     "nssocket": "^0.6.0"
   },
@@ -17,5 +27,8 @@
     "build:watch": "npm run build -- -w",
     "clean": "rm -rf ./lib",
     "prepare": "npm run clean && npm run build"
+  },
+  "engines": {
+    "node": ">=8.0.0"
   }
 }
