@@ -10,23 +10,16 @@ $ yarn add arturo-client
 
 ```js
 const ArturoClient = require('arturo-client')
-
 const client = new ArturoClient(port)
 
-async function main(){
-  try{
-    await client
-      .addWorker({route: '/route', path: 'asbolute/path/to/worker'})
+client.addWorker({route: '/route', path: 'asbolute/path/to/worker'})
+// returns promise
 
-    await client
-      .removeWorker({route: '/route', path: 'asbolute/path/to/worker'})
-  }
-  catch(err){
-    console.error('Whoopsies!')
-  }
-}
-main()
-  .catch(err => { throw err })
+client.removeWorker({route: '/route', path: 'asbolute/path/to/worker'})
+// returns promise
+
+client.end()
+// returns promise
 ```
 
 ## License
