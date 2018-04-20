@@ -9,8 +9,8 @@ $ yarn add arturo-client
 ## Usage
 
 ```js
-const ArturoClient = require('arturo-client')
-const client = new ArturoClient(port)
+const Client = require('arturo-client').default
+const client = new Client(port)
 
 client.addWorker({route: '/route', path: 'asbolute/path/to/worker'})
 // returns promise
