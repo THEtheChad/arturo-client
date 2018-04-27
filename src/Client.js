@@ -62,7 +62,7 @@ export default class Client {
       )
 
       this.debug(`create worker ${worker.route}`)
-      connection.send(['worker', method], worker)
+      connection.send(['worker', method], { worker, environment: process.env })
     }).catch(err => console.error(err)))
 
     return Promise.all(operations)
