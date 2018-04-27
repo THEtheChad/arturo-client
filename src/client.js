@@ -1,9 +1,11 @@
 import nssocket from 'nssocket'
 
 export default class Client {
-  constructor(port) {
+  constructor(opts) {
+    this._opts = Object.assign({
+      port: 61818
+    }, opts)
 
-    this._port = 61818
     this._connection = null
   }
 
@@ -15,7 +17,7 @@ export default class Client {
         connection.on('close', err => err && reject(err))
         connection.on('timeout', () => client.close())
         connection.data(['connected'], () => resolve())
-        connection.connect(this._port)
+        connection.connect(this._opts.port)
       })
     }
 
