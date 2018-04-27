@@ -1,10 +1,15 @@
+import Debug from 'debug'
 import nssocket from 'nssocket'
 
+let id = 0
 export default class Client {
   constructor(opts) {
     this._opts = Object.assign({
-      port: 61818
+      port: 61681
     }, opts)
+
+    this.uuid = `${this.constructor.name}-${process.pid}-${id++}`
+    this.debug = Debug(`arturo:${this.uuid}`)
 
     this._connection = null
   }
@@ -15,8 +20,11 @@ export default class Client {
         const connection = new nssocket.NsSocket()
         connection.on('error', reject)
         connection.on('close', err => err && reject(err))
-        connection.on('timeout', () => client.close())
-        connection.data(['connected'], () => resolve())
+        connection.on('timeout', () => connection.close())
+        connection.data(['connected'], () => {
+          this.debug('connected')
+          resolve(connection)
+        })
         connection.connect(this._opts.port)
       })
     }
@@ -25,32 +33,36 @@ export default class Client {
   }
 
   async _transmit(method, data) {
+    const self = this
     const workers = Client.toArray(data)
     const connection = await this.connection()
 
     const operations = workers.map(worker => new Promise((resolve, reject) => {
 
       const successEvent = ['worker', method, 'success']
-      client.on(
+      connection.data(
         successEvent,
         function onSuccess(result) {
-          if (result.id !== worker.id) return
-          client.removeListener(successEvent, onSuccess)
+          if (result.route !== worker.route) return
+          self.debug(`create worker ${result.route} success!`)
+          connection.removeListener(successEvent, onSuccess)
           resolve()
         }
       )
 
       const errorEvent = ['worker', method, 'error']
-      client.on(
+      connection.data(
         errorEvent,
         function onError(result) {
-          if (result.id !== worker.id) return
-          client.removeListener(errorEvent, onError)
+          if (result.route !== worker.route) return
+          self.debug(`create worker ${result.route} error.`)
+          connection.removeListener(errorEvent, onError)
           reject()
         }
       )
 
-      client.send(['worker', method], worker)
+      this.debug(`create worker ${worker.route}`)
+      connection.send(['worker', method], worker)
     }).catch(err => console.error(err)))
 
     return Promise.all(operations)
